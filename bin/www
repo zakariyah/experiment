@@ -1,0 +1,94 @@
+#!/usr/bin/env node
+var debug = require('debug')('my-application');
+var connect = require('connect');
+var app = require('../app');
+// var answerStore = require('../controller/answerstore');
+var io = require('socket.io');
+// var cookieParser = require('cookie-parser');
+var connecter = require('../database');
+connecter('mongodb://localhost/labexperiment');
+var SessionSockets = require('session.socket.io');
+var gameController = require('../controller/gameController');
+var gameplayer = require('../controller/gameplayer');
+
+app.set('port', process.env.PORT || 4000);
+var server = app.listen(app.get('port'), function() {
+  debug('Express server listening on port ' + server.address().port);
+  console.log('You have logged in ' + app.numberOfTimes + ' times');
+});
+var ionew = io.listen(server);
+
+sessionSockets = new SessionSockets(ionew, app.sessionstore, app.cookieNew);
+
+var gamecontroller = new gameController(2);
+var gameMap = {};
+var gameStartStatus = false;
+
+
+ionew.sockets.on('connection', function (socket) {
+	console.log("connected");
+	socket.on('join', function()
+	{
+		sessionSockets.getSession(socket, function (err, session) {
+		 	if(session)
+		 	{
+		 		// console.log(session.userid);	
+		 		var id = session.userid;
+				var player = new gameplayer(id, socket);
+				gamecontroller.addPlayer(player);
+				if(gamecontroller.isFilled())
+				{
+					startGame();
+					gameStartStatus = true;
+				}
+		 	}
+		});
+
+	});
+
+	function startGame()
+	{
+		// console.log("it is filled");
+		if(!gameStartStatus)
+		{
+			mapOutPlayers();
+			for(var i in gamecontroller.gamePlayers)
+			{
+				console.log(i + " is " + gameMap[i]);
+				var message = "Your opponent is " + gameMap[i];
+				gamecontroller.gamePlayers[i].sessionSocket.emit('serverMessage', {text : message});
+				gamecontroller.gamePlayers[i].sessionSocket.emit('start');
+				console.log('start messages');
+			}
+		}
+		
+
+	}
+
+	function shuffle(o){ //v1.0
+    	for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    	return o;
+	};
+
+	function mapOutPlayers()
+	{
+		var playersId = Object.keys(gamecontroller.gamePlayers);
+		playersId = shuffle(playersId);
+		// console.log("length is " + playersId.length);
+		for (var i = 0; i < playersId.length; i++)
+		{
+			var playerId = playersId[i];
+			// console.log("player " + playerId + " opponent is ");
+			if(i % 2 == 0)
+			{
+				gameMap[playerId] = playersId[i + 1]
+				gamecontroller.setPlayersToRoom(playerId, playersId[i + 1] );
+			}	
+			else
+			{
+				gameMap[playerId] = playersId[i - 1];
+				gamecontroller.pointSecondPlayerToRoom(playerId, playersId[i - 1]);
+			}
+		};
+	} 
+});
