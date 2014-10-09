@@ -17,8 +17,8 @@ var a = function(_me, _A, _M, _lambda, _numExperts)
 			{
 				this.rho = -1.0; // takes care of override
 			}
-			var highestNumber = Math.pow(2, 53);
-			var num = Math.floor(Math.random() * highestNumber);
+			// var highestNumber = Math.pow(2, 53);
+			var num = Math.random();
 			if(num > this.rho)
 			{
 				this.lastExpert = this.randomlySelect(choices);
@@ -62,12 +62,13 @@ var a = function(_me, _A, _M, _lambda, _numExperts)
 
 	this.update = function(R, tau)
 	{
+		var aspiration = 0;
 		for(var i = 0; i < tau; i++)
 		{
-			this.aspiration = this.lambda * this.aspiration + (1.0 - this.lambda) * R;
+			aspiration = this.lambda * aspiration + (1.0 - this.lambda) * R;
 		}
 
-		this.rho = R/this.aspiration;
+		this.rho = R/aspiration;
 		if(this.rho > 1.0)
 		{
 			this.rho = 1.0;
