@@ -331,9 +331,11 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 			console.log(s);
 			for(j = 0; j < this.A[this.me]; j++)
 			{
-				console.log("some values");
+				console.log(" some values ");
 			}
 		}
 	}
 
 }
+
+module.exports = Rmax;
