@@ -1,4 +1,4 @@
-var jefe_plus = function(nombre, _me, _A[2], _M, _lambda, _game[1024])
+var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 {
 	this.A = [];
 	this.A[0] = _A[0];
