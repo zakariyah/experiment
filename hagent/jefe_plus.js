@@ -134,7 +134,7 @@ var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 				Theta[c].s1 = i;
 				Theta[c].s2 = j;
 				Theta[c].one = (this.pay(0, Theta[c].s1) + this.pay(0, Theta[c].s2)) / 2.0;
-				Theta[c].one = (this.pay(1, Theta[c].s1) + this.pay(1, Theta[c].s2)) / 2.0;
+				Theta[c].two = (this.pay(1, Theta[c].s1) + this.pay(1, Theta[c].s2)) / 2.0;
 
 				Theta[c].min = Theta[c].one;
 				if(Theta[c].one > Theta[c].two)
