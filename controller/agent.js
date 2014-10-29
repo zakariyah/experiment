@@ -6,13 +6,21 @@ var agent = function(nombre, playerIndex, payOffMatrix, lambda) // nombre, _me, 
 {
 	this.payOffMatrix =  payOffMatrix;
 
-
-	this.M = this.buildPayoffMatrix();
-
 	this.buildPayoffMatrix = function()
 	{
 		// try and get what M is and use it to build this.
+		var myM = [];
+		myM[0] = [];
+		myM[1] = [];
+		myM[0][0] = [0.6, 0];
+		myM[0][1] = [1, 0.2];
+		myM[1][0] = [0.6, 0];
+		myM[1][1] = [1, 0.2];
+		return myM;
 	}
+	
+	this.M = this.buildPayoffMatrix();
+
 
 	var jefe_plus  = require('../hagent/jefe_plus.js');
 	

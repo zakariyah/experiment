@@ -8,10 +8,16 @@ var room = function(player1, player2)
 	this.answerSlots = [];
 	this.presentChoices = {};
 	this.round = 1;
+	this.agentPresent = false;
 	
 	this.changeRoomState = function()
 	{
 		this.roomState = true;
+	}
+
+	this.setAgentIsPresent = function()
+	{
+		this.agentPresent = true;
 	}
 
 	this.addAnswer = function(answerSlot)

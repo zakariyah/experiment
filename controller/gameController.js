@@ -1,10 +1,14 @@
 var room = require('../controller/room');
+var answerStore = require('../controller/answerstore');
 
-function  gameController(numberOfPlayers)
+function  gameController(numberOfPlayers) //, numberOfAgents)
 {
 	this.numberOfPlayers = numberOfPlayers;
+	// this.numberOfAgents = numberOfAgents;
 	this.gamePlayers = {};
 	this.gameRooms = {};
+	this.answerStores = {};
+	this.roomToSocket = {};
 	this.addPlayer = function(player)
 	{
 		if(player.id in this.gamePlayers)
@@ -36,9 +40,16 @@ function  gameController(numberOfPlayers)
 		this.gameRooms[playerId] = roomPlayer;
 	}
 
-	this.pointSecondPlayerToRoom = function(playerId, opponentId)
+	this.pointSecondPlayerToRoom = function(playerId, opponentId, roomNumber)
 	{
 		this.gameRooms[playerId] = this.gameRooms[opponentId];
+		this.answerStores[roomNumber] = new answerStore(2);
+		this.roomToSocket[playerId] = roomNumber;
+		this.roomToSocket[opponentId] = roomNumber;
+		if(this.gamePlayers[playerId].isAgent || this.gamePlayers[opponentId].isAgent)
+		{
+			this.gameRooms[playerId].setAgentIsPresent();
+		}
 	}
 }
 

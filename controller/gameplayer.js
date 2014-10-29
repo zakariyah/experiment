@@ -1,13 +1,23 @@
 function gameplayer(id, socket, isAgent, index)
 {	
-	this.id = id;
+	if(isAgent)
+	{
+		this.id = id;	
+	}
+	else
+	{
+		this.id = socket.id;
+	}
+	
+
 	
 	this.isAgent = isAgent;
 
 	if(isAgent)
 	{
 		var agen  = require('./agent.js');
-		this.agent = new agen('S++', index, A, 0.99);
+		var A  = [2, 2];
+		this.agent = new agen('S++', (index - 1), A, 0.99);
 	}
 
 	this.setSocket = function(sessionSocket)
@@ -20,6 +30,19 @@ function gameplayer(id, socket, isAgent, index)
 	this.setOpponentId = function(id)
 	{
 		this.opponentId = id;
+	}
+
+	this.nextMove = function(opponentMove)
+	{
+		// this is called to return the next move if it is an algorithm
+		if(isAgent)
+		{
+			var agentMove = this.agent.createMove();
+			var acts = [agentMove, opponentMove];
+			this.agent.update(acts);
+			return agentMove;
+		}
+		return null;
 	}
 
 	this.gameStore = [];

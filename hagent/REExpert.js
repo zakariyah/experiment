@@ -1,4 +1,4 @@
-var REExpert = function(_me, _M, _A[], _s1, _s2, _attack0, _attack1)
+var REExpert = function(_me, _M, _A, _s1, _s2, _attack0, _attack1)
 {
 	this.M = _M;
 	this.A = [];
@@ -309,9 +309,9 @@ var REExpert = function(_me, _M, _A[], _s1, _s2, _attack0, _attack1)
 			for(var i = 0; i < this.numStates; i++)
 			{
 				a = this.whichAction(this.asTheFollower.teacher[i], 1 - this.me);
-				if(a < 0)
-					// console.log("m");
-				else
+				// if(a < 0)
+				// 	// console.log("m");
+				// else
 					// console.log(a);
 			}
 			// console.log(" projected ");

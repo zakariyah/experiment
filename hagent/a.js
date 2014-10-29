@@ -77,3 +77,5 @@ var a = function(_me, _A, _M, _lambda, _numExperts)
 		this.rho = Math.pow(this.rho, tau);
 	}
 }
+
+module.exports = a;

@@ -3,10 +3,25 @@ var iModel = function()
 	this.omega = 1;
 	this.me = 0;
 	this.A = [2, 2];
-	this.init();
 	var constants = require('./constants');
 	this.NUM_PLAYERS = constants.NUM_PLAYERS;
 
+	this.init = function()
+	{
+		var numJointActions = this.A[0];
+		for(var i = 1; i < this.NUM_PLAYERS; i++)
+		{
+			numJointActions = numJointActions * this.A[i];
+		}
+		this.numStates = Math.pow(numJointActions, this.omega);
+		this.lastSeen = [];
+		this.lastTime = [];
+		for(var i = 0; i < this.numStates; i++)
+		{
+			this.lastSeen[i] = this.lastTime[i] = -1;
+		}
+		// console.log("init was called 1gfjg")
+	}
 
 	this.iModelLoadedConstructor = function(_me, _A, _omega)
 	{
@@ -19,21 +34,7 @@ var iModel = function()
 		this.init();
 	}
 
-	this.init = function()
-	{
-		var numJointActions = this.A[0];
-		for(var i = 1; i < this.NUM_PLAYERS; i++)
-		{
-			numJointActions = numJointActions * A[i];
-		}
-		this.numStates = Math.pow(numJointActions, this.omega);
-		this.lastSeen = [];
-		this.lastTime = [];
-		for(var i = 0; i < this.numStates; i++)
-		{
-			this.lastSeen[i] = this.lastTime[i] = -1;
-		}
-	}
+	this.init();
 
 	this.update = function(acts, estado, _t)
 	{
@@ -44,12 +45,12 @@ var iModel = function()
 			{
 				this.lastSeen[i] = -1;
 			}
-			this.lastSeen[estado] = acts[1 - me];
+			this.lastSeen[estado] = acts[1 - this.me];
 			this.lastTime[estado] = _t;
 		}
 		else
 		{
-			this.lastSeen[estado] = acts[1 - me];
+			this.lastSeen[estado] = acts[1 - this.me];
 			this.lastTime[estado] = _t;
 		}
 	}
@@ -102,3 +103,5 @@ var iModel = function()
 		}		
 	}
 }
+
+module.exports = iModel;

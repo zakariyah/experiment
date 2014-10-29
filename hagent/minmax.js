@@ -1,4 +1,4 @@
-var minimaxLog = function(_nActions)
+var minimax = function(_nActions)
 {	
 	this.SENTINAL =  -999999;  // this is a constant
 	this.GRANULARITY = 0.000001; // this is a constant
@@ -386,11 +386,12 @@ var minimaxLog = function(_nActions)
 	}
 }
 
+module.exports = minimax;
 
-var myminimax = new minimaxLog(4);
-var payoff = [0.6 , 1.0, 0, 0.2] ; //, [0, 0, 1.0, 0.2]];
-var nActions = [2, 2];
-myminimax.getMinimax(nActions, 0, payoff);
-var mini = myminimax.mv;
-console.log(mini);
+// var myminimax = new minimaxLog(4);
+// var payoff = [0.6 , 1.0, 0, 0.2] ; //, [0, 0, 1.0, 0.2]];
+// var nActions = [2, 2];
+// myminimax.getMinimax(nActions, 0, payoff);
+// var mini = myminimax.mv;
+// console.log(mini);
 // this.getMinimax = function(nActions, me, payoff)

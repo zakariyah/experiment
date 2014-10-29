@@ -16,6 +16,7 @@ window.onbeforeunload = function() {
     }
 function setTimer()
 {
+  // alert('I was caleed');
   var count = 10;
   var counter=setInterval(timer, 1000);
   function timer()
@@ -61,7 +62,7 @@ function clearSelection()
 var socket = io.connect('http://localhost:4000');
 // var socketid = socket.id;
 socket.on('serverMessage', function(content) {
-  alert('server message was called');
+  // alert('server message was called');
   var defectElement = document.getElementById('voice');
     defectElement.innerHTML = content.text;
     // clearSelection();
@@ -78,7 +79,7 @@ socket.on('serverMessage', function(content) {
 });
 
   socket.on('start', function() {
-  alert('here1');
+  // alert('here1');
   var htmlString = "<div class=\"alert alert-warning\"> GAME STARTS </div>";
   htmlString += "";
 
@@ -96,7 +97,7 @@ socket.on('serverMessage', function(content) {
     setTimer();
 });
 
-alert('I was called 24');
+// alert('I was called 24');
 
 socket.on('disconnectMessage', function(content) {
   var defectElement = document.getElementById('disconnect');

@@ -79,7 +79,7 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 	for(var i = 0; i < this.omega; i++)
 	{
 		this.currentHistory[i] = [];
-		this.dummyHist[] = [];
+		this.dummyHist[i] = [];
 		for(var j = 0; j < this.A.length; j++)
 		{
 			this.currentHistory[i][j] = -1;
@@ -87,7 +87,7 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 	}
 
 
-	this.getJointAction(num, index)
+	this.getJointAction = function(num, index)
 	{
 		var val = Math.pow(this.numJointActions, index + 1);
 		var ja = num % val;
@@ -218,7 +218,7 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 		var val, num = 0;
 		for(var i = 0; i < this.omega; i++)
 		{
-			val = this.A[1] * this.hist[i][0] + this.hist[i][1];
+			val = this.A[1] * hist[i][0] + hist[i][1];
 			num += val * Math.pow(this.numJointActions, i);
 		}
 

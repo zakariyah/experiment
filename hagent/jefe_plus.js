@@ -1,10 +1,11 @@
-var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
+function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 {
 	this.A = [];
 	this.A[0] = _A[0];
 	this.A[1] = _A[1];
 	this.me = _me;
 	this.game = [];
+	this.M = _M;
 	// this.strcpy(this.game, _game); check
 
 	this.numStates = this.A[0] * this.A[1];
@@ -14,83 +15,101 @@ var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 	this.experto = -1;
 	this.estado = -1;
 	this.cycled = false;
-
-	this.numExperts = this.determineExperts();
-	// console.log("numExperts " + this.numExperts);
-
-	this.cycleFull = true;
-
-	this.numSatExperts = 1;
-	this.lambda = 1 - (( 1.0/ this.numSatExperts) * 0.04);
 	var a  = require('./a');
+	var Rmax  = require('./Rmax');
 	var Exp3  = require('./Exp3');
 	var eee  = require('./eee');
 	var ucb  = require('./ucb');
 	var iModel  = require('./iModel');
 	var SolutionPair  = require('./SolutionPair');
 	var REExpert  = require('./REExpert');
-	var minimaxLog  = require('./minimaxLog');
-	if( nombre == "S++")
-	{
-		this.learner = new a(_me, _A, _M, _lambda, this.numExperts);
-		this.cycleFull = false; 
-	}
-	else if ((nombre == "exp3w++") || (nombre == "exp3"))
-	{
-		this.learner = new Exp3(this.me, Math.floor(_lambda), 0.99, this.numExperts);
-	}
-	else if(nombre == "eeew++")
-	{
-		this.learner = new eee(_me, _lambda, this.numExperts);
-	}
-	else if( nombre == "ucbw++")
-	{
-		this.learner = new ucb(_me, _lambda, this.numExperts);
-	}
-	else
-	{
-		// console.log("expert learner not found");
-		return;
-	}
-	this.im = new iModel(this.me, this.A, 1);
-	this.setAspirationFolkEgal();
-	this.mu = 0.0;
-
-	this.vu = [];
-	this.usage = [];
-	for(var i = 0; i < this.numExperts; i++)
-	{
-		this.vu[i] = 1.0;
-		this.usage[i] = 0.0;
-	}
-
-	this.alwaysMM = false;
-	this.permissibleLoss = 100.0;
-
-	this.lowAspiration = 1.0;
-
-	this.REcount = 0;
-	this.br ; // placeholder for br
-	this.satisficingExperts = [];
+	var minimaxLog  = require('./minmax');
 	this.mnmx = [];
-	this.attack0;
-	this.attack1;
-	this.re = [];
-	this.previousActs = [];
-	this.tau = 0;
-	this.R = 0.0;
-	this.determineExperts = function()
+
+	this.computeMaximin = function(index)
 	{
-		this.resetCycle();
-		this.determineStrategyPairs();
-		var numEs = this.REcount * 2 + 2;
-		this.br = new Rmax(this.me, this.A, this.M, 1, 0, 0.95);
-		this.satisficingExperts =  [];
-		for(var i = 0; i< numEs; i++)
+		var i, j;
+
+		var payoff = [];
+		var count = 0;
+		for( i = 0; i < this.A[0]; i++)
 		{
-			this.satisficingExperts[i] = true;
+			for(j = 0; j < this.A[1]; j++)
+			{
+				payoff[count] = this.M[index][i][j];
+				count ++;
+			}
 		}
-		return numEs;
+
+		var mm = new minimaxLog(this.A[index]);
+		mm.getMinimax(this.A, index, payoff);
+
+		return mm;
+	}
+
+	this.computeAttack = function(index)
+	{
+		var i, j;
+		var payoff = [];
+
+		var count = 0;
+		for( i = 0; i < this.A[0]; i++)
+		{
+			for(j = 0; j < this.A[1]; j++)
+			{
+				payoff[count] = -(this.M[1 - index][i][j]);
+				count ++;
+			}
+		}
+
+		var mm = new minimaxLog(this.A[index]);
+		mm.getMinimax(this.A, index, payoff);
+
+		return mm;
+	}
+
+
+	this.pay = function(_meh, _sol)
+	{
+		var a0, a1;
+		a0 = Math.floor(_sol / this.A[1]);
+		a1 = Math.floor(_sol % this.A[1]);
+		// console.log(this.me + ' me is ');
+		return this.M[this.me][a0][a1];
+	}
+
+	this.createSolutionPairs = function(Theta)
+	{
+		var c = 0;
+		for(var i = 0; i < this.numStates; i++)
+		{
+			for(var j = i; j < this.numStates; j++)
+			{
+				Theta[c] = new SolutionPair();
+				Theta[c].s1 = i;
+				Theta[c].s2 = j;
+				Theta[c].one = (this.pay(0, Theta[c].s1) + this.pay(0, Theta[c].s2)) / 2.0;
+				Theta[c].one = (this.pay(1, Theta[c].s1) + this.pay(1, Theta[c].s2)) / 2.0;
+
+				Theta[c].min = Theta[c].one;
+				if(Theta[c].one > Theta[c].two)
+				{
+					Theta[c].min = Theta[c].two;
+				}
+				c++;
+			}
+		}
+	}
+
+	this.resetCycle = function()
+	{
+		this.tau = 0;
+		this.R = 0.0;
+		for(var i = 0; i < this.numStates; i++)
+			this.beenThere[i] = false;
+
+		if(this.estado >= 0)
+			this.beenThere[this.estado] = true;
 	}
 
 	this.determineStrategyPairs = function()
@@ -123,28 +142,115 @@ var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 		}
 	}
 
-	this.createSolutionPairs = function(Theta)
+	this.determineExperts = function()
 	{
-		var c = 0;
-		for(var i = 0; i < this.numStates; i++)
+		this.resetCycle();
+		this.determineStrategyPairs();
+		var numEs = this.REcount * 2 + 2;
+		this.br = new Rmax(this.me, this.A, this.M, 1, 0, 0.95);
+		this.satisficingExperts =  [];
+		for(var i = 0; i< numEs; i++)
 		{
-			for(var j = i; j < this.numStates; j++)
-			{
-				Theta[c] = new SolutionPair();
-				Theta[c].s1 = i;
-				Theta[c].s2 = j;
-				Theta[c].one = (this.pay(0, Theta[c].s1) + this.pay(0, Theta[c].s2)) / 2.0;
-				Theta[c].one = (this.pay(1, Theta[c].s1) + this.pay(1, Theta[c].s2)) / 2.0;
+			this.satisficingExperts[i] = true;
+		}
+		return numEs;
+	}
 
-				Theta[c].min = Theta[c].one;
-				if(Theta[c].one > Theta[c].two)
-				{
-					Theta[c].min = Theta[c].two;
-				}
-				c++;
+	
+
+	this.numExperts = this.determineExperts();
+	// console.log("numExperts " + this.numExperts);
+
+	this.cycleFull = true;
+
+	this.numSatExperts = 1;
+	this.lambda = 1 - (( 1.0/ this.numSatExperts) * 0.04);
+
+	if( nombre == "S++")
+	{
+		this.learner = new a(_me, _A, _M, _lambda, this.numExperts);
+		this.cycleFull = false; 
+	}
+	else if ((nombre == "exp3w++") || (nombre == "exp3"))
+	{
+		this.learner = new Exp3(this.me, Math.floor(_lambda), 0.99, this.numExperts);
+	}
+	else if(nombre == "eeew++")
+	{
+		this.learner = new eee(_me, _lambda, this.numExperts);
+	}
+	else if( nombre == "ucbw++")
+	{
+		this.learner = new ucb(_me, _lambda, this.numExperts);
+	}
+	else
+	{
+		// console.log("expert learner not found");
+		return;
+	}
+	this.im = new iModel(this.me, this.A, 1);
+	
+	this.setAspirationFolkEgal = function()
+	{
+		if(this.REcount == 0)
+		{
+			this.learner.aspiration = this.mnmx[this.me].mv;
+			console.log(" no good expert ");
+			return;
+		}
+
+		var i, j, index = -1;
+		var high = 0.0;
+		var theMin;
+		var s;
+		for(i = 0; i < this.REcount; i++)
+		{
+			theMin = this.re[i].barR[this.me];
+			if(theMin > this.re[i].barR[1 - this.me])
+				theMin = this.re[i].barR[1 - this.me];
+
+			if(theMin > high)
+			{
+				high = theMin;
+				index = i;
 			}
 		}
+
+		this.learner.aspiration = this.re[index].barR[this.me];
+		if(this.learner.aspiration < this.mnmx[this.me].mv)
+			this.learner.aspiration = this.mnmx[this.me].mv;
+		console.log(" initial aspiration levele = " + this.me + ", " + this.learner.aspiration);
 	}
+
+	this.setAspirationFolkEgal();
+	this.mu = 0.0;
+
+	this.vu = [];
+	this.usage = [];
+	for(var i = 0; i < this.numExperts; i++)
+	{
+		this.vu[i] = 1.0;
+		this.usage[i] = 0.0;
+	}
+
+	this.alwaysMM = false;
+	this.permissibleLoss = 100.0;
+
+	this.lowAspiration = 1.0;
+
+	this.REcount = 0;
+	this.br ; // placeholder for br
+	this.satisficingExperts = [];
+	
+	this.attack0;
+	this.attack1;
+	this.re = [];
+	this.previousActs = [];
+	this.tau = 0;
+	this.R = 0.0;
+	
+
+	
 
 	this.move = function()
 	{
@@ -319,7 +425,7 @@ var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 				console.log("minimax");
 		}
 
-		for(var i = 2; i this.numExperts; i+=2)
+		for(var i = 2; i < this.numExperts; i+=2)
 		{
 			ind = (i - 2) / 2;
 			if(this.re[ind].barR[this.me] >= this.learner.aspiration)
@@ -364,66 +470,10 @@ var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 	}
 
 
-	this.resetCycle = function()
-	{
-		this.tau = 0;
-		this.R = 0.0;
-		for(var i = 0; i < this.numStates; i++)
-			this.beenThere[i] = false;
+	
 
-		if(this.estado >= 0)
-			this.beenThere[this.estado] = true;
-	}
+	
 
-	this.pay = function(_meh, _sol)
-	{
-		var a0, a1;
-		a0 = _sol / this.A[1];
-		a1 = _sol % this.A[1];
-		return this.M[this.me][a0][a1];
-	}
-
-	this.computeMaximin = function(index)
-	{
-		var i, j;
-
-		var payoff = [];
-		var count = 0;
-		for( i = 0; i < this.A[0]; i++)
-		{
-			for(j = 0; j < this.A[1]; j++)
-			{
-				payoff[count] = this.M[index][i][j];
-				count ++;
-			}
-		}
-
-		var mm = new minimaxLog(this.A[index]);
-		mm.getMinimax(this.A, index, payoff);
-
-		return mm;
-	}
-
-	this.computeAttack = function(index)
-	{
-		var i, j;
-		var payoff = [];
-
-		var count = 0;
-		for( i = 0; i < this.A[0]; i++)
-		{
-			for(j = 0; j < this.A[1]; j++)
-			{
-				payoff[count] = -(this.M[1 - index][i][j]);
-				count ++;
-			}
-		}
-
-		var mm = new minimaxLog(this.A[index]);
-		mm.getMinimax(this.A, index, payoff);
-
-		return mm;
-	}
 
 	this.setAspirationHigh = function()
 	{
@@ -451,37 +501,7 @@ var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 		console.log(" initial aspiration level = " + this.me + " " + this.learner.aspiration);
 	}
 
-	this.setAspirationFolkEgal = function()
-	{
-		if(this.REcount == 0)
-		{
-			this.learner.aspiration = this.mnmx[this.me].mv;
-			console.log(" no good expert ");
-			return;
-		}
-
-		var i, j, index = -1;
-		var high = 0.0;
-		var theMin;
-		var s;
-		for(i = 0; i < this.REcount; i++)
-		{
-			theMin = this.re[i].barR[this.me];
-			if(theMin > this.re[i].barR[1 - this.me])
-				theMin = this.re[i].barR[1 - this.me];
-
-			if(theMin > high)
-			{
-				high = theMin;
-				index = i;
-			}
-		}
-
-		this.learner.aspiration = this.re[index].barR[this.me];
-		if(this.learner.aspiration < this.mnmx[this.me].mv)
-			this.learner.aspiration = this.mnmx[this.me].mv;
-		console.log(" initial aspiration levele = " + this.me + ", " + this.learner.aspiration);
-	}
+	
 
 	this.setAspirationHighestEnforceable = function()
 	{
@@ -585,3 +605,5 @@ var jefe_plus = function(nombre, _me, _A[2], _M, _lambda ) //, _game[1024])
 		return this.A[1] * _actions[0] + _actions[1];
 	}
 }
+
+module.exports = jefe_plus;
