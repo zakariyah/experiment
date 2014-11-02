@@ -13,11 +13,12 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 	this.K = _K;
 	this.gamma = _gamma;
 	this.numJointActions = this.A[0];
-	for(var i = 0; i < _A.length; i++)
+	for(var i = 1; i < _A.length; i++)
 	{
 		this.numJointActions *= this.A[i];
 	}
 	this.numStates = Math.pow(this.numJointActions, this.omega);
+	// console.log("num states " + this.numStates);
 	this.kappa = [];
 	this.kappa[0] = [];
 	this.kappa[1] = [];
@@ -48,6 +49,7 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 		this.values[i] = [];
 		for(j = 0; j < this.A[this.me]; j++)
 		{
+			// console.log(j);
 			this.values[i][j] = 0.0;
 		}
 	}
@@ -69,7 +71,8 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 
 		for(var i = 0; i < this.A[this.me]; i++)
 		{
-			this.values[this.numStates][i] = this.mx / (1.0 - this.gamma);
+			// console.log("le: " + mx / (1.0 - this.gamma));
+			this.values[this.numStates][i] = mx / (1.0 - this.gamma);
 		}
 	}
 
@@ -91,6 +94,7 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 	{
 		var val = Math.pow(this.numJointActions, index + 1);
 		var ja = num % val;
+		// console.log(val + " : " + this.numJointActions + " : " + index);
 		return ja;
 	}
 
@@ -104,8 +108,9 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 		{
 			this.stateHistories[i][j] = [];
 			ja = this.getJointAction(num, j);
-			num /= this.numJointActions;
-			this.stateHistories[i][j][0] = ja / this.A[1];
+			num = Math.floor(num / this.numJointActions);
+			this.stateHistories[i][j][0] = Math.floor(ja / this.A[1]);
+			// console.log(this.stateHistories[i][j][0]);
 			this.stateHistories[i][j][1] = ja % this.A[1];
 		}
 	}
@@ -118,13 +123,15 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 	{
 		var num = Math.random();
 		var sum = 0.0;
+		// console.log(this.pi );
+		// console.log("s is " + s);
 		for(var i = 0; i < this.A[this.me]; i++)
 		{
 			sum += this.pi[s][i];
 			if(num < sum)
 				break;
 		}
-
+		// console.log("i is : " + i);
 		if(i == this.A[this.me])
 		{
 			i--;
@@ -138,10 +145,11 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 	{
 		var exp1 = 1.0/ (10.0 + (this.t / 100.0));
 		var num =  Math.random();
+		// console.log(exp1);
 		if((num < exp1) || (this.estado < 0))
 		{
 			console.log("r");
-			var highestNumber = Math.pow(2, 53);
+			var highestNumber = 37972;
 			return Math.floor(Math.random() * highestNumber) % this.A[this.me];
 		}
 
@@ -150,16 +158,23 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 
 	this.moveGreedy = function()
 	{
+		// console.log(this.estado);
 		if(this.estado < 0)
 		{
-			return Math.floor(Math.random() * Math.pow(2, 53)) % this.A[this.me];
+			return Math.floor(Math.random() * 37972) % this.A[this.me];
 		}
 		return this.selectAction(this.estado);
 	}
 
 	this.update = function(acts)
 	{
+		// console.log("was called");
 		var sprime = this.updateCurrencyHistory(acts);
+		// console.log("The culprit are " + acts);
+		// if(sprime == 4)
+		// {
+			
+		// }
 		if(this.estado >= 0)
 		{
 			this.kappa[1 - this.me][this.estado][acts[1 - this.me]] ++;
@@ -175,13 +190,15 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 			}
 
 			this.bestResponse(this.M, this.opi);
+			
 		}
+		// console.log("sprime is " + sprime);
 		this.estado = sprime;
 		this.t ++;
 	}
 	
 	this.updateCurrencyHistory = function(_actions)
-	{
+	{		
 		for(var i = 0; i < (this.omega - 1); i++)
 		{
 			this.currentHistory[i][0] = this.currentHistory[i + 1][0];
@@ -210,6 +227,7 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 
 	this.stateFromHistory = function(hist)
 	{
+		// console.log(hist);
 		if(hist[0][0] < 0)
 		{
 			return -1;
@@ -227,10 +245,12 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 
 	this.bestResponse = function(M, opi)
 	{
-		var double = 99999;
-		while(this.change > 0.000001)
+		// console.log(M);
+		var change = 99999;
+		while(change > 0.000001)
 		{
-			this.change = this.greedyValueIteration(M, opi);
+			// console.log("here:" + change);
+			change = this.greedyValueIteration(M, opi);
 		}
 		for(var s = 0; s < this.numStates; s++)
 		{
@@ -245,16 +265,22 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 
 	this.greedyValueIteration = function(M, opi)
 	{
+		// console.log("was called");
 		var s, sprime, a, i , j, nv, change = 0.0;
 		var hist = [];
+		// console.log(opi);
 		for(i = 0; i < this.MAXLENGTH; i++)
 		{
 			// MAXLENGTH not yet known
+			// console.log(this.MAXLENGTH);
+			hist[i] = [];
 			for(j = 0; j < this.A.length; j++)
 			{
 				hist[i][j] = 0;
 			}
 		}
+
+		// console.log(hist);
 
 		for(s = 0; s < this.numStates; s++)
 		{
@@ -280,16 +306,16 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 
 						if(this.me == 0)
 						{
-							nv += opi[s][j] * (this.M[this.me][a][j] + this.gamma * this.maxV(sprime));
+							nv += opi[s][j] * (M[this.me][a][j] + this.gamma * this.maxV(sprime));
 						}
 						else
 						{
-							nv += opi[s][j] * (this.M[this.me][j][a] + this.gamma * this.maxV(sprime));
+							nv += opi[s][j] * (M[this.me][j][a] + this.gamma * this.maxV(sprime));
 						}
 					}
 				}
 
-				change += this.fabs(this.values[s][a] - nv);
+				change += Math.abs(this.values[s][a] - nv);
 				this.values[s][a] = nv;
 			}
 		}
@@ -309,11 +335,11 @@ var Rmax = function(_me, _A, _M, _omega, _K, _gamma)
 	}
 
 	this.argmax = function(s)
-	{
-		var oneOrZero  = Math.floor((Math.random()) + 0.5);
+	{		
 		var max = 0;
 		for(var i = 1; i < this.A[this.me]; i++)
 		{
+			var oneOrZero  = Math.floor((Math.random()) + 0.5);
 			if((this.values[s][max] < this.values[s][i]) || ((this.values[s][max] == this.values[s][i]) && (oneOrZero)))
 			{
 				max = i;

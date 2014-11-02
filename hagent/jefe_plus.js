@@ -15,6 +15,7 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 	this.experto = -1;
 	this.estado = -1;
 	this.cycled = false;
+
 	var a  = require('./a');
 	var Rmax  = require('./Rmax');
 	var Exp3  = require('./Exp3');
@@ -24,6 +25,16 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 	var SolutionPair  = require('./SolutionPair');
 	var REExpert  = require('./REExpert');
 	var minimaxLog  = require('./minmax');
+
+
+	this.REcount = 0;
+	this.br ; // placeholder for br
+	this.satisficingExperts = [];
+	
+	this.attack0;
+	this.attack1;
+	this.re = [];
+
 	this.mnmx = [];
 
 	this.computeMaximin = function(index)
@@ -75,7 +86,7 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 		a0 = Math.floor(_sol / this.A[1]);
 		a1 = Math.floor(_sol % this.A[1]);
 		// console.log(this.me + ' me is ');
-		return this.M[this.me][a0][a1];
+		return this.M[_meh][a0][a1];
 	}
 
 	this.createSolutionPairs = function(Theta)
@@ -89,7 +100,7 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 				Theta[c].s1 = i;
 				Theta[c].s2 = j;
 				Theta[c].one = (this.pay(0, Theta[c].s1) + this.pay(0, Theta[c].s2)) / 2.0;
-				Theta[c].one = (this.pay(1, Theta[c].s1) + this.pay(1, Theta[c].s2)) / 2.0;
+				Theta[c].two = (this.pay(1, Theta[c].s1) + this.pay(1, Theta[c].s2)) / 2.0;
 
 				Theta[c].min = Theta[c].one;
 				if(Theta[c].one > Theta[c].two)
@@ -100,6 +111,9 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 			}
 		}
 	}
+
+	this.tau = 0;
+	this.R = 0.0;
 
 	this.resetCycle = function()
 	{
@@ -131,8 +145,10 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 		// console.log("maximins: " + this.mnmx[0].mv +" " + this.mnmx[1].mv);
 		this.REcount = 0;
 		this.re = [];
-		for( var i = 0; i < this.numSolutionPairs; i++)
+		// console.log("solution pairs " + numSolutionPairs);
+		for( var i = 0; i < numSolutionPairs; i++)
 		{
+			// console.log("Theta.one:" + Theta[i].one + " mnmx.mv:" + this.mnmx[0].mv + " Theta[i].two:" + Theta[i].two + " mnmx[1].mv:" + this.mnmx[1].mv);
 			if((Theta[i].one >= this.mnmx[0].mv) && (Theta[i].one > 0) && (Theta[i].two >= this.mnmx[1].mv) && (Theta[i].two > 0))
 			{
 				// console.log("creating something");
@@ -188,14 +204,17 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 		// console.log("expert learner not found");
 		return;
 	}
+
 	this.im = new iModel(this.me, this.A, 1);
 	
 	this.setAspirationFolkEgal = function()
 	{
+		// console.log("I was caled");
 		if(this.REcount == 0)
 		{
 			this.learner.aspiration = this.mnmx[this.me].mv;
 			console.log(" no good expert ");
+			// console.log();
 			return;
 		}
 
@@ -236,21 +255,65 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 	this.alwaysMM = false;
 	this.permissibleLoss = 100.0;
 
-	this.lowAspiration = 1.0;
+	// this.lowAspiration = 1.0;
 
-	this.REcount = 0;
-	this.br ; // placeholder for br
-	this.satisficingExperts = [];
-	
-	this.attack0;
-	this.attack1;
-	this.re = [];
 	this.previousActs = [];
-	this.tau = 0;
-	this.R = 0.0;
+	
 	
 
-	
+	// this.determineStrategyPairs = function()
+	// {
+	// 	var numSolutionPairs = 0;
+	// 	for(var i = 0; i < this.numStates; i++)
+	// 	{
+	// 		numSolutionPairs += (i + 1);
+	// 	}
+
+	// 	var Theta = [];
+	// 	this.createSolutionPairs(Theta);
+
+	// 	this.mnmx[0]= this.computeMaximin(0);
+	// 	this.mnmx[1]= this.computeMaximin(1);
+	// 	this.attack0 = this.computeAttack(0);
+	// 	this.attack1 = this.computeAttack(1);
+
+	// 	// console.log("maximins: " + this.mnmx[0].mv +" " + this.mnmx[1].mv);
+	// 	this.REcount = 0;
+	// 	this.re = [];
+	// 	for( var i = 0; i < this.numSolutionPairs; i++)
+	// 	{
+	// 		if((Theta[i].one >= this.mnmx[0].mv) && (Theta[i].one > 0) && (Theta[i].two >= this.mnmx[1].mv) && (Theta[i].two > 0))
+	// 		{
+	// 			// console.log("creating something");
+	// 			this.re[this.REcount] = new REExpert(this.me, this.M, this.A, Theta[i].s1, Theta[i].s2, this.attack0, this.attack1);
+	// 			this.REcount ++;
+	// 		}
+	// 	}
+	// }
+
+	// this.createSolutionPairs = function(Theta)
+	// {
+	// 	var c = 0;
+	// 	for(var i = 0; i < this.numStates; i++)
+	// 	{
+	// 		for(var j = i; j < this.numStates; j++)
+	// 		{
+	// 			Theta[c] = new SolutionPair();
+	// 			Theta[c].s1 = i;
+	// 			Theta[c].s2 = j;
+	// 			Theta[c].one = (this.pay(0, Theta[c].s1) + this.pay(0, Theta[c].s2)) / 2.0;
+	// 			Theta[c].two = (this.pay(1, Theta[c].s1) + this.pay(1, Theta[c].s2)) / 2.0;
+
+	// 			Theta[c].min = Theta[c].one;
+	// 			if(Theta[c].one > Theta[c].two)
+	// 			{
+	// 				Theta[c].min = Theta[c].two;
+	// 			}
+	// 			c++;
+	// 		}
+	// 	}
+	// }
+
 
 	this.move = function()
 	{
@@ -277,12 +340,15 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 				var ind = this.experto - 2;
 				if(ind >= this.REcount)
 					ind -= this.REcount;
+				// console.log("previousActs " + this.previousActs);
 				this.re[ind].reset(this.previousActs);
 			}
 			this.cycled = false;
 		}
 
 		var a;
+		// console.log(this.br.estado);
+		// this.experto = 1;
 		if(this.experto == 0)
 			a = this.generateAction(this.me, this.mnmx[this.me].ms);
 		else if(this.experto == 1)
@@ -354,8 +420,8 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 				this.alwaysMM = true;
 		}
 
-		if(this.learner.aspiration < this.lowAspiration)
-			this.lowAspiration = this.learner.aspiration;
+		// if(this.learner.aspiration < this.lowAspiration)
+		// 	this.lowAspiration = this.learner.aspiration;
 	}
 
 	this.override = function()
@@ -498,7 +564,7 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 		}
 
 		this.learner.aspiration = high;
-		console.log(" initial aspiration level = " + this.me + " " + this.learner.aspiration);
+		// console.log(" initial aspiration level = " + this.me + " " + this.learner.aspiration);
 	}
 
 	

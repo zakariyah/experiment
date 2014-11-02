@@ -14,8 +14,8 @@ var agent = function(nombre, playerIndex, payOffMatrix, lambda) // nombre, _me, 
 		myM[1] = [];
 		myM[0][0] = [0.6, 0];
 		myM[0][1] = [1, 0.2];
-		myM[1][0] = [0.6, 0];
-		myM[1][1] = [1, 0.2];
+		myM[1][0] = [0.6, 1];
+		myM[1][1] = [0, 0.2];
 		return myM;
 	}
 	

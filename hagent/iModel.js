@@ -1,10 +1,29 @@
-var iModel = function()
+var iModel = function(_me, _A, _omega)
 {
-	this.omega = 1;
-	this.me = 0;
-	this.A = [2, 2];
 	var constants = require('./constants');
 	this.NUM_PLAYERS = constants.NUM_PLAYERS;
+	// console.log(this.NUM_PLAYERS);
+	this.lastSeen = [];
+	this.lastTime = [];
+	this.numStates;
+
+	if(_me != undefined)
+	{
+		// console.log(_A);
+		this.me = _me;
+		this.A = [];
+		for(var i = 0; i < this.NUM_PLAYERS; i++)
+			this.A[i] = _A[i];
+		this.omega = _omega;
+	}
+	else
+	{
+		this.omega = 1;
+		this.me = 0;
+		this.A = [2, 2];
+	}
+
+
 
 	this.init = function()
 	{
@@ -13,26 +32,26 @@ var iModel = function()
 		{
 			numJointActions = numJointActions * this.A[i];
 		}
+		// console.log(numJointActions, this.omega);
 		this.numStates = Math.pow(numJointActions, this.omega);
-		this.lastSeen = [];
-		this.lastTime = [];
+		// console.log(this.numStates);
 		for(var i = 0; i < this.numStates; i++)
 		{
 			this.lastSeen[i] = this.lastTime[i] = -1;
 		}
-		// console.log("init was called 1gfjg")
+		// console.log(this.lastSeen, this.lastTime);
 	}
 
-	this.iModelLoadedConstructor = function(_me, _A, _omega)
-	{
-		this.me = _me;
-		for(var i = 0; i < _A.length; i++)
-		{
-			this.A[i] = _A[i];
-		}
-		this.omega = _omega;
-		this.init();
-	}
+	// this.iModelLoadedConstructor = function(_me, _A, _omega)
+	// {
+	// 	this.me = _me;
+	// 	for(var i = 0; i < _A.length; i++)
+	// 	{
+	// 		this.A[i] = _A[i];
+	// 	}
+	// 	this.omega = _omega;
+	// 	this.init();
+	// }
 
 	this.init();
 
@@ -55,26 +74,27 @@ var iModel = function()
 		}
 	}
 
-	this.matchOmegaStrategy = function(thars)
-	{
-		var s;
-		for(s = 0; s < thars.numStates; s++)
-		{
-			if(this.lastSeen[s] >= 0)
-			{
-				if(thars.pi[s][this.lastSeen[s]] < 0.9999)
-				{
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+	// this.matchOmegaStrategy = function(thars)
+	// {
+	// 	var s;
+	// 	for(s = 0; s < thars.numStates; s++)
+	// 	{
+	// 		if(this.lastSeen[s] >= 0)
+	// 		{
+	// 			if(thars.pi[s][this.lastSeen[s]] < 0.9999)
+	// 			{
+	// 				return false;
+	// 			}
+	// 		}
+	// 	}
+	// 	return true;
+	// }
 
 
 	this.match = function(pi)
 	{
 		var s;
+		// console.log(pi);
 		for(s = 0; s < this.numStates; s++)
 		{
 			if(this.lastSeen[s] >= 0)

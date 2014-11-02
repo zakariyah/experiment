@@ -27,7 +27,7 @@ var minimax = function(_nActions)
 		// first check for a pure strategy solution
 		if(this.pureStrategy(this.mpi, nActions, me, payoff))
 		{
-			console.log("pure strategy solution");
+			// console.log("pure strategy solution");
 			this.mv = this.evaluatePolicy(nActions, this.mpi, payoff, me);
 			for(var i = 0; i < nActions[me]; i++)
 			{
@@ -268,12 +268,12 @@ var minimax = function(_nActions)
 				// console.log("it is here");
 				if(payoff[s] == -Math.abs(this.SENTINAL))
 				{
-					console.log("something is wrong");
+					// console.log("something is wrong");
 					V += 999999.0 * mpi[j]; // changes this eventually?
 				}
 				else
 				{
-					console.log("it happened here");
+					// console.log("it happened here");
 					// console.log("payoff " + payoff[s]);
 					// console.log("mpi " + mpi[j]);
 					V += payoff[s] * mpi[j];
@@ -388,10 +388,10 @@ var minimax = function(_nActions)
 
 module.exports = minimax;
 
-// var myminimax = new minimaxLog(4);
-// var payoff = [0.6 , 1.0, 0, 0.2] ; //, [0, 0, 1.0, 0.2]];
+// var myminimax = new minimax(2);
+// var payoff = [0.6 , 1.0, 0.0, 0.2] ; //, [0, 0, 1.0, 0.2]];
 // var nActions = [2, 2];
 // myminimax.getMinimax(nActions, 0, payoff);
 // var mini = myminimax.mv;
 // console.log(mini);
-// this.getMinimax = function(nActions, me, payoff)
+// // this.getMinimax = function(nActions, me, payoff)

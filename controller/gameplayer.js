@@ -38,9 +38,9 @@ function gameplayer(id, socket, isAgent, index)
 		if(isAgent)
 		{
 			var agentMove = this.agent.createMove();
-			var acts = [agentMove, opponentMove];
+			var acts = [agentMove, opponentMove - 1];
 			this.agent.update(acts);
-			return agentMove;
+			return agentMove + 1;
 		}
 		return null;
 	}

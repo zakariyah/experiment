@@ -4,6 +4,9 @@ var a = function(_me, _A, _M, _lambda, _numExperts)
 	this.numExperts = _numExperts;
 	this.lambda = _lambda;
 	this.lastExpert = -1;
+	this.rho;
+	this.aspiration = 0.0;
+	// console.log("a was used");
 
 	this.select = function(choices)
 	{
@@ -18,7 +21,9 @@ var a = function(_me, _A, _M, _lambda, _numExperts)
 				this.rho = -1.0; // takes care of override
 			}
 			// var highestNumber = Math.pow(2, 53);
+			// console.log("rho is " + this.rho);
 			var num = Math.random();
+
 			if(num > this.rho)
 			{
 				this.lastExpert = this.randomlySelect(choices);
@@ -39,7 +44,12 @@ var a = function(_me, _A, _M, _lambda, _numExperts)
 			}
 		}
 
-		var highestNumber = Math.pow(2, 53);
+		if(cnt == 0)
+		{
+			console.log(" no choices aspiration " + this.aspiration);
+		}
+
+		var highestNumber = 37572;
 		var pick = Math.floor(Math.random() * highestNumber) % cnt;
 		cnt = 0;
 
@@ -62,13 +72,13 @@ var a = function(_me, _A, _M, _lambda, _numExperts)
 
 	this.update = function(R, tau)
 	{
-		var aspiration = 0;
+		// var aspiration = 0;
 		for(var i = 0; i < tau; i++)
 		{
-			aspiration = this.lambda * aspiration + (1.0 - this.lambda) * R;
+			this.aspiration = this.lambda * this.aspiration + (1.0 - this.lambda) * R;
 		}
 
-		this.rho = R/aspiration;
+		this.rho = R / this.aspiration;
 		if(this.rho > 1.0)
 		{
 			this.rho = 1.0;

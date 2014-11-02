@@ -13,7 +13,7 @@ var strategyPair = function(_me, _M, _A, _acts, s1, s2, assessment)
 
 	for(var i = 0; i < this.numStates; i++)
 	{
-		for(var j = 0; j < _A[1 - this.me; j++)
+		for(var j = 0; j < _A[1 - this.me]; j++)
 		{
 			this.follower[i][j] = 0.0;
 		}
