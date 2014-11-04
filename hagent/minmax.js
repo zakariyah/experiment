@@ -386,12 +386,14 @@ var minimax = function(_nActions)
 	}
 }
 
-module.exports = minimax;
+// module.exports = minimax;
 
-// var myminimax = new minimax(2);
-// var payoff = [0.6 , 1.0, 0.0, 0.2] ; //, [0, 0, 1.0, 0.2]];
-// var nActions = [2, 2];
-// myminimax.getMinimax(nActions, 0, payoff);
-// var mini = myminimax.mv;
-// console.log(mini);
-// // this.getMinimax = function(nActions, me, payoff)
+var myminimax = new minimax(2);
+var payoff = [0.6 , 1.0, 0.0, 0.2] ; //, [0, 0, 1.0, 0.2]];
+var nActions = [2, 2];
+myminimax.getMinimax(nActions, 0, payoff);
+var mini = myminimax.mv;
+var midi = myminimax.ms;
+console.log(mini);
+console.log("midi " + midi);
+// this.getMinimax = function(nActions, me, payoff)

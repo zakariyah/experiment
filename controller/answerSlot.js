@@ -9,11 +9,14 @@ var answerSlot = function(player1, opponent, answer1, opponentAnswer, round)
 	// this.gameid = gameid;
 	this.opponentAnswer = opponentAnswer;
 	this.player1Type = "Normal";
+	
 	if(answer1 == 0)
 	{
 		this.player1Type = "Random";
 	}
+	
 	this.player2Type = "Normal";
+	
 	if(opponentAnswer == 0)
 	{
 		this.opponentAnswer = "Random";
