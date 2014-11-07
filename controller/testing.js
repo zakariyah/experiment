@@ -1,11 +1,12 @@
 var agen = require('./agent');
-var TFT = require('../tester/TFT');
+var TFT = require('../tester/alwaysDefect');
 var playgames = require('../tester/playgames');
 
 var A  = [2, 2];
 var agent = new agen('S++', 0, A, 0.99);
+var agent2 = new agen('S++', 0, A, 0.99);
 var TFTagent = new TFT();
-var game = new playgames(TFTagent, agent, 200);
+var game = new playgames(TFTagent, agent2, 1000);
 console.log(game.playGame());
 
 
@@ -19,3 +20,4 @@ console.log(game.playGame());
 // previousMove = agentMove;
 // console.log(i + ', ' + acts);		
 // }
+

@@ -1,13 +1,13 @@
 function gameplayer(id, socket, isAgent, index)
 {	
-	if(isAgent)
-	{
-		this.id = id;	
-	}
-	else
-	{
+	// if(isAgent)
+	// {
+	// 	this.id = id;	
+	// }
+	// else
+	// {
 		this.id = socket.id;
-	}
+	// }
 	
 
 	

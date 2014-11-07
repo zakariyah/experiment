@@ -11,23 +11,23 @@ var minimax = function(_nActions)
 
 	for(var i = 0; i < _nActions; i++)
 	{
-		this.ms.push(1.0/_nActions);
+		this.ms[0] = (1.0/_nActions);
 	}
 
-	this.delete_minimaxLog = function()
-	{
-		// this function stands for ~minimaxLog
-		this.ms = [];
-		this.mpi = [];
-		this.nott = []
-	}
+	// this.delete_minimaxLog = function()
+	// {
+	// 	// this function stands for ~minimaxLog
+	// 	this.ms = [];
+	// 	this.mpi = [];
+	// 	this.nott = []
+	// }
 	
 	this.getMinimax = function(nActions, me, payoff)
 	{
 		// first check for a pure strategy solution
 		if(this.pureStrategy(this.mpi, nActions, me, payoff))
 		{
-			// console.log("pure strategy solution");
+			console.log("pure strategy solution");
 			this.mv = this.evaluatePolicy(nActions, this.mpi, payoff, me);
 			for(var i = 0; i < nActions[me]; i++)
 			{
@@ -49,6 +49,8 @@ var minimax = function(_nActions)
 			if(tmp > this.mv)
 			{
 				this.mv = tmp;
+				//printf("1st new mv = %lf; (%lf, %lf)\n", mv, mpi[0], mpi[1]);
+				console.log(" Ist new mv = " + this.mv + " mpi " + mpi[0] + " mpi1 " + mpi[1]);
 
 				for(var i = 0; i < nActions[me]; i++)
 				{
@@ -67,6 +69,9 @@ var minimax = function(_nActions)
 			if(tmp > this.mv)
 			{
 				this.mv = tmp;
+				//printf("2nd new mv = %lf; (%lf, %lf)\n", mv, mpi[0], mpi[1]);			
+				console.log("2nd new mv = " + this.mv + "mpi " + mpi[0] + " mpi " + mpi[1]);
+
 				for(var i = 0; i < nActions[me]; i++)
 				{
 					this.ms[i] = mpi[i];
@@ -74,21 +79,26 @@ var minimax = function(_nActions)
 			}
 			return tmp;
 		}
+		console.log("got here");
 
 		var Val = [];
 		var right;
 
-		mpi[index] = i; //(remaining - 1);
+		mpi[index] = l; //(remaining - 1);
 		right = remaining - mpi[index];
 		Val[0] = this.policyIterations(mpi, nActions, me, payoff, remaining-mpi[index], index+1, 0.0, right/(nActions[me] - (index + 1)), right);
+		
 		mpi[index] = m; // (remaining - m)
 		right = remaining - mpi[index];
 		Val[1] = this.policyIterations(mpi, nActions, me, payoff, remaining - mpi[index], index + 1, 0.0, right/(nActions[me] - (index + 1)), right);
+
 		mpi[index] = r; // (remaining - r)
 		right = remaining - mpi[index];
 		Val[2] = this.policyIterations(mpi, nActions, me, payoff, remaining - mpi[index], index + 1, 0.0, right/(nActions[me] - (index + 1)), right);
+
 		var order = [];
 		this.getOrder(Val[0], Val[1], Val[2], order);
+
 		if((r - 1) < this.GRANULARITY ) //what is GRANULARITY
 		{
 			return Val[order[0]];
@@ -96,7 +106,7 @@ var minimax = function(_nActions)
 		
 		if(order[0] == 0)
 		{
-			return this.policyIterations(mpi, nActions, me, payoff, remaining, index, 1, (m - 1)/(nActions[me] - index) + 1, m);
+			return this.policyIterations(mpi, nActions, me, payoff, remaining, index, l, (m - l)/(nActions[me] - index) + l, m);
 		}
 		else if(order[0] == 2)
 		{
@@ -106,23 +116,25 @@ var minimax = function(_nActions)
 		{
 			// check the quarter points
 			var lq, rq;
-			mpi[index] = ((m - 1) / (nActions[me] - (index + 1))) + 1;
+			mpi[index] = ((m - l) / (nActions[me] - (index + 1))) + l;
 			right = remaining - mpi[index];
 			lq = this.policyIterations(mpi, nActions, me, payoff, remaining - mpi[index], index + 1, 0.0, right/(nActions[me] - (index + 1)), right);
+			
 			if(lq > Val[1])
 			{
-				return this.policyIterations(mpi, nActions, me, payoff, remaining, index, 1, (m -1)/(nActions[me] - index) + 1, m);
+				return this.policyIterations(mpi, nActions, me, payoff, remaining, index, l, (m -l)/(nActions[me] - index) + l, m);
 			}
 
 			mpi[index] = (( r - m) / (nActions[me] - (index + 1))) + m;
 			right = remaining - mpi[index];
 			rq = this.policyIterations(mpi, nActions, me, payoff, remaining - mpi[index], index + 1, 0.0, right/(nActions[me] - (index + 1)), right);
+			
 			if(rq > Val[1])
 			{
 				return policyIterations(mpi, nActions, me, payoff, remaining, index, m, (r-m)/(nActions[me] - index) + m, r);
 			}
 
-			return this.policyIterations(mpi, nActions, me, payoff, remaining, index, (m - 1)/(nActions[me] - index) + 1, m, (r - m)/ (nActions[me] - index) + m);
+			return this.policyIterations(mpi, nActions, me, payoff, remaining, index, (m - l)/(nActions[me] - index) + l, m, (r - m)/ (nActions[me] - index) + m);
 		}		
 
 	}
@@ -130,9 +142,12 @@ var minimax = function(_nActions)
 	this.getDimensionHigh = function(mpi, nActions, me, payoff, index, remaining, l, m , r)
 	{
 		var Val = [];
-		mpi[index] = remaining - 1;
+		// console.log("l is " + l);
+
+		mpi[index] = remaining - l;
 		mpi[index + 1] = remaining - mpi[index];
 		Val[0] = this.evaluatePolicy(nActions, mpi, payoff, me);
+
 		mpi[index] = remaining - m ;
 		mpi[index + 1] = remaining - mpi[index];
 		Val[1] = this.evaluatePolicy(nActions, mpi, payoff, me);
@@ -144,11 +159,11 @@ var minimax = function(_nActions)
 		var order = [];
 		this.getOrder(Val[0], Val[1], Val[2], order);
 
-		if((r - 1) < this.GRANULARITY) //check for granularity
+		if((r - l) < this.GRANULARITY) //check for granularity
 		{
 			if(order[0] == 0)
 			{
-				mpi[index] = remaining - 1;
+				mpi[index] = remaining - l;
 				mpi[index + 1] = remaining - mpi[index];
 			}
 			else if(order[0] == 1)
@@ -162,7 +177,7 @@ var minimax = function(_nActions)
 
 		if(order[0] == 0)
 		{
-			return this.getDimensionHigh(mpi, nActions, me, payoff, index, remaining, 1, (m + 1)/2.0, m);
+			return this.getDimensionHigh(mpi, nActions, me, payoff, index, remaining, l, (m + l)/2.0, m);
 		}
 		else if(order[0] == 2)
 		{
@@ -173,13 +188,13 @@ var minimax = function(_nActions)
 			// check the quarter points
 			var lq, rq;
 
-			mpi[index] = remaining - ((m + 1)/ 2.0);
+			mpi[index] = remaining - ((m + l)/ 2.0);
 			mpi[index + 1] = remaining - mpi[index];
 			lq = this.evaluatePolicy(nActions, mpi, payoff, me);
 
 			if(lq > Val[1])
 			{
-				return this.getDimensionHigh(mpi, nActions, me, payoff, index, remaining, 1, (m+1)/2.0, m);
+				return this.getDimensionHigh(mpi, nActions, me, payoff, index, remaining, l, (m+l)/2.0, m);
 			}
 
 			mpi[index] = remaining - ((m + r) / 2.0);
@@ -190,7 +205,7 @@ var minimax = function(_nActions)
 			{
 				return this.getDimensionHigh(mpi, nActions, me, payoff, index, remaining, m, (m+r)/2.0, r);
 			}
-		return this.getDimensionHigh(mpi, nActions, me, payoff, index, remaining, (1 + m)/2.0, m, (r + m)/2.0);
+		return this.getDimensionHigh(mpi, nActions, me, payoff, index, remaining, (l + m)/2.0, m, (r + m)/2.0);
 		}
 	}
 
@@ -303,8 +318,10 @@ var minimax = function(_nActions)
 		{
 			s = index * nActions[1];
 		}
+		// console.log("s is " + s + " and me is " + me);
 
 		altito = payoff[s];
+		// console.log("altito " + altito);	
 		for(i = 1; i < nActions[me]; i++)
 		{
 			if(me == 0)
@@ -316,6 +333,7 @@ var minimax = function(_nActions)
 				s = index * nActions[1] + i;
 			}
 
+			// console.log("second s is " + s);
 			if(payoff[s] > altito)
 			{
 				altito = payoff[s];
@@ -344,6 +362,7 @@ var minimax = function(_nActions)
 				rval = true;
 			}
 		}
+		// console.log("rval is " + rval);
 		return rval;
 	}
 
@@ -389,9 +408,9 @@ var minimax = function(_nActions)
 // module.exports = minimax;
 
 var myminimax = new minimax(2);
-var payoff = [0.6 , 1.0, 0.0, 0.2] ; //, [0, 0, 1.0, 0.2]];
+var payoff = [0.75, 1, 0.25, 0] ; 
 var nActions = [2, 2];
-myminimax.getMinimax(nActions, 0, payoff);
+myminimax.getMinimax(nActions, 1, payoff);
 var mini = myminimax.mv;
 var midi = myminimax.ms;
 console.log(mini);
