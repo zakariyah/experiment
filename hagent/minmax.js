@@ -408,9 +408,9 @@ var minimax = function(_nActions)
 // module.exports = minimax;
 
 var myminimax = new minimax(2);
-var payoff = [0.75, 1, 0.25, 0] ; 
+var payoff = [0, 1, 1/3, 2/3] ; 
 var nActions = [2, 2];
-myminimax.getMinimax(nActions, 1, payoff);
+myminimax.getMinimax(nActions, 0, payoff);
 var mini = myminimax.mv;
 var midi = myminimax.ms;
 console.log(mini);
