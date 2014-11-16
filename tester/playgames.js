@@ -3,7 +3,7 @@ var playgames = function(agent1, agent2, numberOfTimes)
 	this.numberOfTimes = numberOfTimes;
 	this.agent1 = agent1;
 	this.agent2 = agent2;
-	// this.agent1choices = [];
+	this.agentChoices = [];
 	// this.agent2choices = [];
 	this.agent1Payoff = 0;
 	this.agent2Payoff = 0;
@@ -24,14 +24,14 @@ var playgames = function(agent1, agent2, numberOfTimes)
 			// acts = [a, b];
 			this.agent1.update([a, b]);
 			this.agent2.update([b, a]);
-			// this.agent1choices.push(a);
+			this.agentChoices.push([a,b]);
 			// this.agent2choices.push(b);
-			console.log("agent "  + [a, b]);
+			// console.log("agent "  + [a, b]);
 			this.agent1Payoff += this.myM[0][a][b];
 			this.agent2Payoff += this.myM[1][a][b];
 		}
 
-		return [this.agent1Payoff, this.agent2Payoff];
+		return [this.agent1Payoff, this.agent2Payoff, this.agentChoices];
 	}
 }
 

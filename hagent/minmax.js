@@ -27,7 +27,7 @@ var minimax = function(_nActions)
 		// first check for a pure strategy solution
 		if(this.pureStrategy(this.mpi, nActions, me, payoff))
 		{
-			console.log("pure strategy solution");
+			// console.log("pure strategy solution");
 			this.mv = this.evaluatePolicy(nActions, this.mpi, payoff, me);
 			for(var i = 0; i < nActions[me]; i++)
 			{
@@ -405,14 +405,14 @@ var minimax = function(_nActions)
 	}
 }
 
-// module.exports = minimax;
+module.exports = minimax;
 
-var myminimax = new minimax(2);
-var payoff = [0, 1, 1/3, 2/3] ; 
-var nActions = [2, 2];
-myminimax.getMinimax(nActions, 0, payoff);
-var mini = myminimax.mv;
-var midi = myminimax.ms;
-console.log(mini);
-console.log("midi " + midi);
+// var myminimax = new minimax(2);
+// var payoff = [0, 1, 1/3, 2/3] ; 
+// var nActions = [2, 2];
+// myminimax.getMinimax(nActions, 0, payoff);
+// var mini = myminimax.mv;
+// var midi = myminimax.ms;
+// console.log(mini);
+// console.log("midi " + midi);
 // this.getMinimax = function(nActions, me, payoff)
