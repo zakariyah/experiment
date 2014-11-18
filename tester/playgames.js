@@ -4,6 +4,8 @@ var playgames = function(agent1, agent2, numberOfTimes)
 	this.agent1 = agent1;
 	this.agent2 = agent2;
 	this.agentChoices = [];
+	this.agentPayoffs = [];
+	this.cummulativePayoffs = [];
 	// this.agent2choices = [];
 	this.agent1Payoff = 0;
 	this.agent2Payoff = 0;
@@ -25,13 +27,15 @@ var playgames = function(agent1, agent2, numberOfTimes)
 			this.agent1.update([a, b]);
 			this.agent2.update([b, a]);
 			this.agentChoices.push([a,b]);
+			this.agentPayoffs.push([this.myM[0][a][b], this.myM[1][a][b]])
 			// this.agent2choices.push(b);
 			// console.log("agent "  + [a, b]);
 			this.agent1Payoff += this.myM[0][a][b];
 			this.agent2Payoff += this.myM[1][a][b];
+			this.cummulativePayoffs.push([Number(this.agent1Payoff).toFixed(2), Number(this.agent2Payoff).toFixed(2)])
 		}
 
-		return [this.agent1Payoff, this.agent2Payoff, this.agentChoices];
+		return [Number(this.agent1Payoff).toFixed(2), Number(this.agent2Payoff).toFixed(2), this.agentChoices, this.agentPayoffs, this.cummulativePayoffs];
 	}
 }
 

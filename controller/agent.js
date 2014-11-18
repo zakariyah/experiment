@@ -2,7 +2,7 @@
 // state of the game for the agent. It is what defines the agent next move.
 
 
-var agent = function(nombre, playerIndex, payOffMatrix, lambda) // nombre, _me, _A[2], _M, _lambda, _game[1024]
+var agent = function(nombre, playerIndex, payOffMatrix, lambda, gameType) // nombre, _me, _A[2], _M, _lambda, _game[1024]
 {
 	this.payOffMatrix =  payOffMatrix;
 
@@ -12,10 +12,43 @@ var agent = function(nombre, playerIndex, payOffMatrix, lambda) // nombre, _me, 
 		var myM = [];
 		myM[0] = [];
 		myM[1] = [];
-		myM[0][0] = [0.6, 0];
-		myM[0][1] = [1, 0.2];
-		myM[1][0] = [0.6, 1];
-		myM[1][1] = [0, 0.2];
+		if(gameType=="prisoners")
+		{
+			myM[0][0] = [0.6, 0];
+			myM[0][1] = [1, 0.2];
+			myM[1][0] = [0.6, 1];
+			myM[1][1] = [0, 0.2];	
+		}
+		else if(gameType == "bofs")
+		{
+			myM[0][0] = [0.5, 1.0];
+			myM[0][1] = [0.75, 0.25];
+			myM[1][0] = [0.5, 0.75];
+			myM[1][1] = [1, 0.25];
+		}
+		else if(gameType == "tricky")
+		{
+			myM[0][0] = [0, 1];
+			myM[0][1] = [1/3.0, 2/3.0];
+			myM[1][0] = [1, 2/3.0];
+			myM[1][1] = [0, 1/3.0];
+
+		}
+		else if(gameType == "staghunt")
+		{
+			myM[0][0] = [0.8, -1.0];
+			myM[0][1] = [0.6, 0.4];
+			myM[1][0] = [0.8, 0.6];
+			myM[1][1] = [-1, 0.4];
+		}
+		else if(gameType == "chicken")
+		{
+			myM[0][0] = [0.75, 0.25];
+			myM[0][1] = [1, 0];
+			myM[1][0] = [0.75, 1];
+			myM[1][1] = [0.25, 0];
+		}
+
 		return myM;
 	}
 	

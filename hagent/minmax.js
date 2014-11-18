@@ -407,12 +407,20 @@ var minimax = function(_nActions)
 
 module.exports = minimax;
 
-// var myminimax = new minimax(2);
-// var payoff = [0, 1, 1/3, 2/3] ; 
-// var nActions = [2, 2];
-// myminimax.getMinimax(nActions, 0, payoff);
+// // var myminimax = new minimax(2);
+// // var prisonerPayoff = [0.6, 0, 1, 0.2] ; 
+// var bofsPayoff = [0.5, 1, 0.75, 0.25] ;
+// // var trickyPayoff = [0, 1.0, 1/3.0, 2/3.0] ;
+// // var staghuntPayoff = [0.8, -1.0, 0.6, 0.4] ;   
+// // var chickenPayoff = [0.75, 0.25, 1.0, 0.0] ; 
+// // var nActions = [2, 2];
+// // myminimax.getMinimax(nActions, 0, prisonerPayoff);
+// myminimax.getMinimax(nActions, 0, bofsPayoff);
+// // // myminimax.getMinimax(nActions, 0, trickyPayoff);
+// // // myminimax.getMinimax(nActions, 0, staghuntPayoff);
+// // // myminimax.getMinimax(nActions, 0, chickenPayoff);
 // var mini = myminimax.mv;
 // var midi = myminimax.ms;
 // console.log(mini);
 // console.log("midi " + midi);
-// this.getMinimax = function(nActions, me, payoff)
+// // // this.getMinimax = function(nActions, me, payoff)
