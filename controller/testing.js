@@ -6,20 +6,21 @@ fs = require('fs');
 var A  = [2, 2];
 var games = {'staghunt': 'staghuntSP', 'prisoners':'prisonersSP', 'chicken':'chickenSP', 'bofs':'bofsSP', 'tricky':'trickySP'}
 
+for(gam in games)
+  {
 for(var j = 0; j < 300; j++)
 {
-  for(gam in games)
-  {
+  
   var agent = new agen('S++', 0, A, 0.99, gam);
   var agent2 = new agen('S++', 0, A, 0.99, gam);
   var TFTagent = new TFT();
   var TFTagent1 = new TFT();
   var game = new playgames(agent2, agent, 50);
   var u = game.playGame();
-  console.log(u[0], u[1]);
+  // console.log(u[0], u[1]);
   var results = '';
   // u = game.playGame();
-      results += 'ROUND_NO\tCHOICE1\tCHOICE2\tPAYOFF1\tPAYOFF2\tCUM1\tCUM2\tTOTAL1\tTOTAL2\n';   
+      results += 'ROUND_NO' + (j+1) + '\tCHOICE1\tCHOICE2\tPAYOFF1\tPAYOFF2\tCUM1\tCUM2\tTOTAL1\tTOTAL2\n';   
       for(var i = 0; i < u[2].length; i++)
       {
         results += (i + 1) +'\t' + u[2][i][0] + '\t' + u[2][i][1] + '\t' + u[3][i][0] + '\t' + u[3][i][1] + '\t' + u[4][i][0] + '\t' + u[4][i][1] + '\t' +  u[0] + '\t' + u[1] + '\n';   
@@ -27,7 +28,7 @@ for(var j = 0; j < 300; j++)
 
     // printOutResult();
     // console.log(dict);
-    fs.writeFile("./hagent/resultsFolder/" + games[gam] + (j +1) + ".txt", results, function(err) {
+    fs.appendFile("./hagent/resultsFolder/" + games[gam] + ".txt", results, function(err) {
       if(err) {
           console.log(err);
       } else {
