@@ -21,18 +21,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
 var cookieParser = cookieParser('1234567890QWERTY') ;
-var sessionStore = new connect.middleware.session.MemoryStore();
+// var sessionStore = new connect.middleware.session.MemoryStore();
 
-  app.use(cookieParser);
-  app.use(connect.session({ store: sessionStore }));
+  // app.use(cookieParser);
+  // app.use(connect.session({ store: sessionStore }));
 
 // app.use(cookieParser());
 // app.use(cookieParser());
 // console.log('session ' + connect.session);
 // var sessionstore  = new connect.session.MemoryStore();
 // app.use(connect.session({secret: '1234567890QWERTY', store: sessionstore }));
-app.sessionstore = sessionStore;
-app.cookieNew = cookieParser;
+// app.sessionstore = sessionStore;
+// app.cookieNew = cookieParser;
 // console.log('session ' + connect.session);
 // app.use(connect.session({secret: '1234567890QWERTY'}));
 app.use(express.static(path.join(__dirname, 'public')));

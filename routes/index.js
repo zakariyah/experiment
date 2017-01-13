@@ -21,9 +21,9 @@ router.get('/', function(req, res) {
 
 router.post('/entry', function(req, res) {
 	pageCount ++;
-	req.session.userid = req.body.id;
-	var userid = req.session.userid;
-	res.render('entry', {title: 'Express', numbero: userid });
+	// req.session.userid = req.body.id;
+	// var userid = req.session.userid;
+	res.render('entry', {title: 'Express', numbero: pageCount });
 });
 
 router.get('/information', function(req, res) {

@@ -238,7 +238,7 @@ function   jefe_plus(nombre, _me, _A, _M, _lambda ) //, _game[1024])
 		this.learner.aspiration = this.re[index].barR[this.me];
 		if(this.learner.aspiration < this.mnmx[this.me].mv)
 			this.learner.aspiration = this.mnmx[this.me].mv;
-		console.log(" initial aspiration levele = " + this.me + ", " + this.learner.aspiration);
+		// console.log(" initial aspiration levele = " + this.me + ", " + this.learner.aspiration);
 	}
 
 	this.setAspirationFolkEgal();

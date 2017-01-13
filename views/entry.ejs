@@ -1,11 +1,9 @@
-<!DOCTYPE html>
 <html>
   <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <title>Choose Your Action</title>
     <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script type="text/javascript" src="hagile.js"></script>
   </head>
   <body>
     <script src="http://localhost:4000/socket.io/socket.io.js"></script>
@@ -62,10 +60,21 @@ function clearSelection()
 var socket = io.connect('http://localhost:4000');
 // var socketid = socket.id;
 socket.on('serverMessage', function(content) {
+  var options = ['A', 'B'];
   // alert('server message was called');
   var defectElement = document.getElementById('voice');
     defectElement.innerHTML = content.text;
-    // clearSelection();
+    var recomend = document.getElementById('recommender');
+    var reco = content.recommendation;
+    if(reco != null && content.count < 5)
+    {
+      var message = "Recommendation: Please play " + options[reco - 1];
+      recomend.innerHTML = message;
+    }
+    if(content.count >= 1)
+    {
+      clearSelection();
+    }
     if(content.count < 5)
     {
       setTimer();
@@ -83,11 +92,11 @@ socket.on('serverMessage', function(content) {
   var htmlString = "<div class=\"alert alert-warning\"> GAME STARTS </div>";
   htmlString += "";
 
-    htmlString += "<table class=\'table\'><tr><td>Actions</td><td><span id=\'timer\'></span></td></tr><tr><td><input type=\"radio\" name=\"choiceAction\" id=\'first\'  value=\"1\"> </td><td>A</td></tr><tr><td> <input type=\"radio\" name=\"choiceAction\" id=\'second\' value=\"2\"></td><td>B</td></tr></table>";
+    // htmlString += "<table class=\'table\'><tr><td>Actions</td><td><span id=\'timer\'></span></td></tr><tr><td><input type=\"radio\" name=\"choiceAction\" id=\'first\'  value=\"1\"> </td><td>A</td></tr><tr><td> <input type=\"radio\" name=\"choiceAction\" id=\'second\' value=\"2\"></td><td>B</td></tr></table>";
 
-    htmlString += "<table class=\"table table-bordered\"><caption> Game Payoff Matrix </caption><tr><th class=\"tableheader\" rowspan=\"4\" colspan=\"1\" style=\"text-align:center;\"><br><br>Your <br> Action</th><th rowspan=\"1\" colspan=";
-     htmlString += "\"3\">Opponent Action</th></tr><tr><td></td><td>A</td><td>B</td></tr><tr><td >A</th><td><span style=\"color: #009\"><i>3</i></span>, <span style=\"color: #900\"><i>3</i></span></td><td><span style=\"color: #009\"><i>0</i></span>,"; 
-      htmlString += " <span style=\"color: #900\"><i>5</i></span></td></tr><tr><td>B</td><td><span style=\"color: #009\"><i>5</i></span>, <span style=\"color: #900\"><i>0</i></span></td><td><span style=\"color: #009\"><i>1</i></span>, <span style=\"color: #900\"><i>1</i></span></td></tr></table>";
+    htmlString += "<table class=\"table table-bordered\"><caption> Game Payoff Matrix:  <span id=\'timer\'></span></caption><tr><th class=\"tableheader\" rowspan=\"2\" colspan=\"1\" style=\"text-align:center;\"><br><br>Your <br> Action</th><th rowspan=\"1\" colspan=";
+     htmlString += "\"3\">Opponent Action</th></tr><tr><td></td><td>A</td><td>B</td></tr><tr><td><input type=\"radio\" name=\"choiceAction\" id=\'first\'  value=\"1\"> </td><td >A</th><td><span style=\"color: #009\"><i>3</i></span>, <span style=\"color: #900\"><i>3</i></span></td><td><span style=\"color: #009\"><i>0</i></span>,"; 
+      htmlString += " <span style=\"color: #900\"><i>5</i></span></td></tr><tr><td> <input type=\"radio\" name=\"choiceAction\" id=\'second\' value=\"2\"></td><td>B</td><td><span style=\"color: #009\"><i>5</i></span>, <span style=\"color: #900\"><i>0</i></span></td><td><span style=\"color: #009\"><i>1</i></span>, <span style=\"color: #900\"><i>1</i></span></td></tr></table>";
       htmlString += "<div class=\"alert alert-info\"> Your points are in blue</div>";
   
   var actionElement = document.getElementById('actions');
@@ -127,22 +136,22 @@ setTimerBeginning();
 // for timer starting
 </script>
     <div class='container'>
-<div class='col-lg-1'>
-</div>
-<div class='col-lg-10'>
+<!-- <div class='col-md-1'>
+</div> -->
 
-<div class='col-lg-5'>
+<div class='col-md-5'>
     <div class='row' id='actions'>
       <p>Welcome user <%= numbero %></p>
       <div class="alert alert-warning"> Please wait for your opponent <span id='timerBegin'></span></div>
 </div>
   </div>
 <!--     <button onclick='return startgame()'>Start</button> -->
-    <div class='col-lg-7'>
-      <div class="row">
-    <div id='voice'>
+    <div class='col-md-7'>
+      <div class="row" id='voice'>
+    
+  </div>
+  <div class="row alert alert-warning" id='recommender'>
       
-    </div>
   </div>
   <div class="row">
     <div id='disconnect'>
@@ -151,8 +160,8 @@ setTimerBeginning();
   </div>
   </div>
 </div>
-<div class='col-lg-1'>
-</div>
-</div>
+<!-- <div class='col-md-1'>
+</div> -->
+
   </body>
 </html>

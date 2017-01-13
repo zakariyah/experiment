@@ -1,17 +1,46 @@
 function gameplayer(id, socket, isAgent, index)
 {	
-	if(isAgent)
-	{
-		this.id = id;	
-	}
-	else
-	{
+	// if(isAgent)
+	// {
+	// 	this.id = id;	
+	// }
+	// else
+	// {
 		this.id = socket.id;
-	}
+	// }
 	
 
 	
 	this.isAgent = isAgent;
+	this.recommender;
+	this.hasRecommender  = false;
+
+	this.setHasRecommender = function()
+	{
+		var agen  = require('./agent.js');
+		var A  = [2, 2];
+		this.recommender = new agen('S++', 0, A, 0.99);	
+		this.hasRecommender = true;
+	}
+
+	this.getRecommendation = function()
+	{
+		if(this.hasRecommender)
+		{
+			var agentMove = this.recommender.createMove();
+			return agentMove + 1;
+		}
+		return null;
+	}
+
+	this.updateRecommender = function(playerMove, opponentMove)
+	{
+		if(this.hasRecommender)
+		{
+			var acts = [playerMove - 1, opponentMove - 1];
+			this.recommender.update(acts);
+		}
+	}
 
 	if(isAgent)
 	{

@@ -8,6 +8,7 @@ function player(id)
 		this.history.push(arrayOfValues) //[choice, value, opponentchoice, opponentvalue]);
 		// console.log("after pushing: " + this.history.length);
 	};
+
 	this.getCummulativeValue = function()
 	{
 		cummulative = 0;
